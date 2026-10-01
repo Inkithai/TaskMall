@@ -588,10 +588,14 @@ export function createSeed(now: Date = DEMO_EPOCH): SeedData {
 
   // Available balance is the spec figure; derive the opening entry so the
   // ledger adds up to it exactly.
+  //
+  // Every row counts, including the "processing" debits of open tasks — that
+  // capital really has left the available balance (it is shown again under
+  // Pending, because it still belongs to the user). Keeping the sum total
+  // means accept / complete / timeout each move the ledger and the balance by
+  // the same amount, so `available === sum(transactions)` always holds.
   const AVAILABLE = 18450
-  const settled = transactions
-    .filter((t) => !(t.type === 'order' && t.status === 'processing'))
-    .reduce((sum, t) => sum + t.amount, 0)
+  const settled = transactions.reduce((sum, t) => sum + t.amount, 0)
   const openingBalance = round2(AVAILABLE - settled)
 
   transactions.push({

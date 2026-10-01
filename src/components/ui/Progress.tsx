@@ -68,7 +68,7 @@ export function RingProgress({
   const ratio = max <= 0 ? 0 : Math.max(0, Math.min(1, value / max))
   return (
     <div className="relative inline-flex" style={{ width: size, height: size }}>
-      <svg width={size} height={size} className="-rotate-90">
+      <svg width={size} height={size} aria-hidden className="-rotate-90">
         <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#e8edf5" strokeWidth={stroke} />
         <circle
           cx={size / 2}

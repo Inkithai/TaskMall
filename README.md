@@ -180,6 +180,21 @@ Today's reward  LKR 1,245.60   ← sum of the 12 completed orders' rewards
 Each completed order writes three ledger rows — capital out, capital returned, reward credited — so the
 wallet is auditable rather than a hard-coded number.
 
+**Two invariants hold after every action**, not just at seed time:
+
+```
+available === sum(every ledger row)
+pending   === capital held by orders still in `pending`
+```
+
+Accepting a task moves capital from available into pending; completing it returns the capital and credits
+the reward; a timeout returns the capital and credits nothing. Total wealth only ever changes by rewards,
+recharges and withdrawals.
+
+**Tasks expire on their own.** A pending order whose effective time runs out is swept into `timeout`, its
+capital refunded in full, its package cancelled and a notification raised — so the countdown on a task
+card actually resolves instead of resting at "Expired".
+
 ## Safety posture
 
 Task-based "earn money" platforms are a well-documented fraud pattern, so this demo is deliberately built
@@ -234,8 +249,7 @@ No backend, no API client, no state library, no chart library.
 ## Known limitations
 
 - **Frontend only.** Every mutation is local; clearing site data resets everything.
-- Five catalogue items (Ceylon Green Tea, Sunscreen SPF50, Power Bank, Bamboo Board, Yoga Mat) render with
-  a gradient + emoji placeholder instead of a photograph.
-- The demo clock is pinned near `2026‑10‑01 13:05`. Leaving the tab open for many hours will let a pending
-  task drift past its countdown.
-- Not audited for accessibility or internationalisation beyond the language picker stub.
+- The demo clock starts at `2026‑10‑01 13:05` and then ticks in real time, so relative timestamps drift
+  the longer a tab stays open. Reload to re-pin it.
+- Internationalisation is a stub — the language picker stores a preference but no translations ship.
+- Product imagery is AI-generated and the brands on the packaging are invented.

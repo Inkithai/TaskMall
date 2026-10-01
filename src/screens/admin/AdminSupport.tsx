@@ -151,9 +151,10 @@ export default function AdminSupport() {
             </div>
 
             <div className="flex gap-2 border-t border-hairline pt-3">
-              <input
-                className="tm-field flex-1"
-                placeholder="Reply to the user..."
+          <input
+            className="tm-field flex-1"
+            aria-label="Reply to the user"
+            placeholder="Reply to the user..."
                 value={reply}
                 onChange={(e) => setReply(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && send()}

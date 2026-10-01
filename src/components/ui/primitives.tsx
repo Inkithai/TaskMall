@@ -263,7 +263,7 @@ export function Checkbox({
         )}
       >
         {checked && (
-          <svg viewBox="0 0 12 12" className="h-3 w-3 text-white" fill="none" stroke="currentColor" strokeWidth="2.2">
+          <svg viewBox="0 0 12 12" aria-hidden className="h-3 w-3 text-white" fill="none" stroke="currentColor" strokeWidth="2.2">
             <path d="M2.5 6.2 4.8 8.5 9.5 3.8" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         )}

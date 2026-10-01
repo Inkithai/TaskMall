@@ -229,9 +229,10 @@ export default function Support() {
         footer={
           ticket && ticket.status !== 'closed' ? (
             <div className="flex gap-2">
-              <input
-                className="tm-field flex-1"
-                placeholder="Write a reply..."
+            <input
+              className="tm-field flex-1"
+              aria-label="Write a reply"
+              placeholder="Write a reply..."
                 value={reply}
                 onChange={(e) => setReply(e.target.value)}
                 onKeyDown={(e) => {

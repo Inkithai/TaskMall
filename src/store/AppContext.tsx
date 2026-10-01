@@ -66,7 +66,7 @@ export interface AppState {
   lifetimeCompleted: number
 }
 
-function freshState(): AppState {
+export function freshState(): AppState {
   const seed = createSeed(demoNow())
   return {
     auth: { user: false, admin: false, remembered: null },
@@ -83,6 +83,7 @@ export type Action =
   | { type: 'admin/logout' }
   | { type: 'order/accept'; productId: string; quantity: number }
   | { type: 'order/complete'; orderNumber: string }
+  | { type: 'order/expire'; orderNumbers: string[] }
   | { type: 'wallet/recharge'; amount: number }
   | {
       type: 'wallet/withdraw'
@@ -129,7 +130,7 @@ function notify(state: AppState, n: Omit<AppNotification, 'id' | 'at' | 'read'>)
   ]
 }
 
-function reducer(state: AppState, action: Action): AppState {
+export function reducer(state: AppState, action: Action): AppState {
   switch (action.type) {
     case 'auth/login':
       return {
@@ -230,6 +231,79 @@ function reducer(state: AppState, action: Action): AppState {
           body: `Order #${orderNumber} is now processing. Simulated capital of LKR ${amount.toFixed(2)} is held.`,
           link: `/orders/${orderNumber}`,
         }),
+      }
+    }
+
+    /**
+     * Effective time elapsed on one or more pending tasks. Held capital is
+     * refunded in full and no reward is issued — the same shape the seed uses
+     * for historic timeouts, so the ledger stays consistent either way.
+     */
+    case 'order/expire': {
+      const expiring = state.orders.filter(
+        (o) => o.status === 'pending' && action.orderNumbers.includes(o.orderNumber),
+      )
+      if (expiring.length === 0) return state
+      const now = demoNow()
+      const expiringNumbers = new Set(expiring.map((o) => o.orderNumber))
+      const refundTotal = expiring.reduce((sum, o) => sum + o.amount, 0)
+
+      const refunds: Transaction[] = expiring.map((o) => ({
+        id: `TX-RFD-${o.orderNumber}`,
+        type: 'order',
+        title: 'Task Capital Refunded',
+        reference: o.orderNumber,
+        amount: o.amount,
+        status: 'completed',
+        at: now.toISOString(),
+        note: 'Effective time elapsed — no reward issued, simulated capital returned in full',
+      }))
+
+      let notifications = state.notifications
+      for (const o of expiring) {
+        notifications = notify(
+          { ...state, notifications },
+          {
+            kind: 'expiring',
+            title: 'Task Timed Out',
+            body: `Order #${o.orderNumber} passed its effective time. Simulated capital was returned in full and no reward was issued.`,
+            link: `/orders/${o.orderNumber}`,
+          },
+        )
+      }
+
+      return {
+        ...state,
+        orders: state.orders.map((o) =>
+          expiringNumbers.has(o.orderNumber)
+            ? {
+                ...o,
+                status: 'timeout' as const,
+                pkg: {
+                  ...o.pkg,
+                  status: 'cancelled' as PackageStatus,
+                  timeline: buildTimeline(new Date(o.orderTime), 'cancelled'),
+                },
+              }
+            : o,
+        ),
+        transactions: [
+          ...refunds,
+          ...state.transactions.map((t) =>
+            t.reference && expiringNumbers.has(t.reference) && t.id === `TX-ORD-${t.reference}`
+              ? {
+                  ...t,
+                  status: 'completed' as const,
+                  note: t.note?.replace('held', 'debited'),
+                }
+              : t,
+          ),
+        ],
+        wallet: {
+          available: round2(state.wallet.available + refundTotal),
+          pending: round2(Math.max(0, state.wallet.pending - refundTotal)),
+        },
+        notifications,
       }
     }
 
@@ -593,6 +667,24 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }, 150)
     return () => window.clearTimeout(id)
   }, [state])
+
+  /**
+   * Sweep for pending tasks whose effective time has elapsed. The virtual
+   * clock keeps ticking while the tab is open, so a countdown that reaches
+   * zero has to actually settle the order rather than sit at "Expired".
+   */
+  useEffect(() => {
+    const sweep = () => {
+      const now = demoNow().getTime()
+      const due = state.orders
+        .filter((o) => o.status === 'pending' && new Date(o.expiresAt).getTime() <= now)
+        .map((o) => o.orderNumber)
+      if (due.length > 0) dispatch({ type: 'order/expire', orderNumbers: due })
+    }
+    sweep()
+    const id = window.setInterval(sweep, 15_000)
+    return () => window.clearInterval(id)
+  }, [state.orders])
 
   const dismissToast = useCallback((id: number) => {
     setToasts((prev) => prev.filter((t) => t.id !== id))
