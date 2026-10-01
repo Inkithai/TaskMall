@@ -217,6 +217,10 @@ so it **cannot** be mistaken for, or repurposed into, one:
   "pay commission for recruitment" as **permanently locked-off** switches, documenting the position in the
   product itself.
 
+📄 **[docs/task-scam-red-flags.md](docs/task-scam-red-flags.md)** — a field guide to how real task-scam
+platforms operate: the six-stage lifecycle, red flags by severity, the design and infrastructure tells,
+what to do if you are caught in one, and where to report it in Sri Lanka and internationally.
+
 ## Project structure
 
 ```
