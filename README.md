@@ -52,7 +52,7 @@ The repo ships with a GitHub Actions workflow (`.github/workflows/deploy.yml`) t
 1. In the repo on GitHub: **Settings → Pages → Build and deployment → Source: GitHub Actions**
 2. Push to `main` (or run the workflow manually from the **Actions** tab — "Deploy to GitHub Pages" → **Run workflow**)
 
-The site goes live at **https://inkithai.github.io/TaskMall/**.
+The site goes live at **https://inkithai.github.io/TaskMall-ScamSite/**.
 
 Notes on Pages-specific configuration already in place:
 
