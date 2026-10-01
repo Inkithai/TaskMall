@@ -15,6 +15,7 @@ A mobile-first task/order management and e‑commerce frontend with a separate d
 ## Table of contents
 
 - [Running it](#running-it)
+- [Deploying to GitHub Pages](#deploying-to-github-pages)
 - [Demo credentials](#demo-credentials)
 - [What's in the build](#whats-in-the-build)
 - [Screens](#screens)
@@ -43,6 +44,22 @@ npm run dev        # http://localhost:5173
 | `npm run typecheck` | TypeScript only |
 
 Requires Node 18+.
+
+## Deploying to GitHub Pages
+
+The repo ships with a GitHub Actions workflow (`.github/workflows/deploy.yml`) that builds the app and publishes `dist/` to GitHub Pages. One-time setup:
+
+1. In the repo on GitHub: **Settings → Pages → Build and deployment → Source: GitHub Actions**
+2. Push to `main` (or run the workflow manually from the **Actions** tab — "Deploy to GitHub Pages" → **Run workflow**)
+
+The site goes live at **https://inkithai.github.io/TaskMall/**.
+
+Notes on Pages-specific configuration already in place:
+
+- `vite.config.ts` sets `base: '/TaskMall/'` so assets resolve under the repo subpath. If you rename the repo or use a custom domain, update `base` accordingly (`'/'` for a custom domain or `user.github.io` repo).
+- Routing uses `HashRouter` (e.g. `/#/orders`) because Pages only serves a static `index.html` — deep links and refreshes would otherwise 404.
+- Product images in `src/data/products.ts` are prefixed with `import.meta.env.BASE_URL` for the same reason.
+
 
 ## Demo credentials
 
