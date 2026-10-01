@@ -154,6 +154,27 @@ export default function Login() {
             )}
           </DemoNotice>
 
+          <div className="rounded-xl border border-brand-100 bg-brand-50/70 px-3.5 py-3 text-[12px] text-ink">
+            <div className="flex items-center justify-between gap-3">
+              <span className="font-bold text-brand-800">Demo credentials</span>
+              <button
+                type="button"
+                onClick={() => {
+                  setPhone(DEMO_PHONE)
+                  setPassword(DEMO_PASSWORD)
+                  setError('')
+                }}
+                className="font-bold text-brand-700 hover:underline"
+              >
+                Use demo account
+              </button>
+            </div>
+            <div className="mt-1.5 grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5 text-muted">
+              <span>Phone</span><code className="font-semibold text-ink">{DEMO_PHONE}</code>
+              <span>Password</span><code className="font-semibold text-ink">{DEMO_PASSWORD}</code>
+            </div>
+          </div>
+
           <Link
             to="/admin/login"
             className="flex items-center justify-center gap-1.5 text-[12px] font-semibold text-muted transition-colors hover:text-brand-700"
