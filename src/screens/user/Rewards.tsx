@@ -1,15 +1,20 @@
-import { Check, Flame, Gift, Lock } from 'lucide-react'
+import { Check, ChevronRight, Flame, Gift, Lock } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { ScreenHeader } from '../../components/layout/Headers'
 import { Button, Card, SectionTitle, cx } from '../../components/ui/primitives'
 import { Badge, DemoNotice } from '../../components/ui/Badge'
 import { ProgressBar } from '../../components/ui/Progress'
 import { useApp } from '../../store/AppContext'
 import { lkr } from '../../lib/format'
+import { TierBadge } from '../../components/membership/TierBadge'
+import { tierFor, tierProgress } from '../../data/membership'
 
 export default function Rewards() {
   const { state, dispatch, toast } = useApp()
   const claimedDays = state.dailyCheckIn.filter((d) => d.claimed).length
   const nextDay = state.dailyCheckIn.find((d) => !d.claimed)
+  const tier = tierFor(state.lifetimeCompleted)
+  const tierInfo = tierProgress(state.lifetimeCompleted)
 
   function claim(day: number, label: string) {
     dispatch({ type: 'rewards/claim', day })
@@ -21,6 +26,31 @@ export default function Rewards() {
       <ScreenHeader title="Rewards" />
 
       <div className="space-y-3 px-4 pt-3">
+        {/* Membership level */}
+        <Link to="/membership" className="block">
+          <Card className="flex items-center gap-3">
+            <span
+              aria-hidden
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-[15px] font-extrabold text-white"
+              style={{ backgroundImage: `linear-gradient(135deg, ${tier.gradient[0]}, ${tier.gradient[1]})` }}
+            >
+              {tier.name.charAt(0)}
+            </span>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-1.5">
+                <p className="text-[13.5px] font-extrabold text-navy">{tier.name} member</p>
+                <TierBadge tier={tier} size="sm" />
+              </div>
+              <p className="mt-0.5 text-[11px] text-muted">
+                {tierInfo.next
+                  ? `${tierInfo.remaining} more completed orders to reach ${tierInfo.next.name}`
+                  : 'Top level reached'}
+              </p>
+            </div>
+            <ChevronRight size={16} className="shrink-0 text-faint" />
+          </Card>
+        </Link>
+
         {/* Daily activity */}
         <Card>
           <SectionTitle action={<Badge tone="info">{claimedDays}/7 days</Badge>}>Daily Activity</SectionTitle>

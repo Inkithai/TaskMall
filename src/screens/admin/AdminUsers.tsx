@@ -6,6 +6,8 @@ import { Button, DataRow, Field, cx } from '../../components/ui/primitives'
 import { Badge, SimulatedTag } from '../../components/ui/Badge'
 import { Sheet } from '../../components/ui/Modal'
 import { ChipRail } from '../../components/ui/Tabs'
+import { TierBadge } from '../../components/membership/TierBadge'
+import { tierFor } from '../../data/membership'
 import { useApp } from '../../store/AppContext'
 import type { AdminUserRow } from '../../data/types'
 import { count, dateShort, lkrShort, relative } from '../../lib/format'
@@ -75,6 +77,12 @@ export default function AdminUsers() {
       ),
     },
     { key: 'orders', header: 'Orders', align: 'right', render: (u) => <span className="tnum">{u.orders}</span> },
+    {
+      key: 'tier',
+      header: 'Level',
+      hideBelow: 'lg',
+      render: (u) => <TierBadge tier={tierFor(u.orders)} size="sm" />,
+    },
     {
       key: 'balance',
       header: 'Balance',

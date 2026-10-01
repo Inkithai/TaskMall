@@ -2,6 +2,8 @@ import { useMemo, useState } from 'react'
 import { Check, Copy, Share2, ShieldAlert, Users } from 'lucide-react'
 import { ScreenHeader } from '../../components/layout/Headers'
 import { Card, SectionTitle, cx } from '../../components/ui/primitives'
+import { TierBadge } from '../../components/membership/TierBadge'
+import { tierFor } from '../../data/membership'
 import { Badge } from '../../components/ui/Badge'
 import { ChipRail } from '../../components/ui/Tabs'
 import { useApp } from '../../store/AppContext'
@@ -151,7 +153,10 @@ export default function Team() {
                     {member.name.replace('User ', '')}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-[13px] font-semibold text-navy">{member.name}</p>
+                    <div className="flex items-center gap-1.5">
+                      <p className="truncate text-[13px] font-semibold text-navy">{member.name}</p>
+                      <TierBadge tier={tierFor(member.tasksCompleted)} size="sm" />
+                    </div>
                     <p className="text-[11px] text-muted">
                       Level {member.level} · joined {dateShort(member.joined)}
                     </p>

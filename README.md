@@ -61,7 +61,7 @@ To wipe all local changes and regenerate the dataset: **Profile → Reset demo d
 
 ## What's in the build
 
-- **19 user screens** in a `430px` mobile shell — fixed bottom nav (Home / Orders / Wallet / Team / Me)
+- **20 user screens** in a `430px` mobile shell — fixed bottom nav (Home / Orders / Wallet / Team / Me)
   and a blue circular **Support** FAB floating above it.
 - **13 admin screens** in a desktop layout with a collapsible dark-navy sidebar.
 - **Full state machine** — accepting a task debits capital, completing it returns capital plus the reward,
@@ -94,6 +94,7 @@ To wipe all local changes and regenerate the dataset: **Profile → Reset demo d
 | Transaction History | `/wallet/transactions` | Filterable ledger |
 | Team | `/team` | 24 members across 3 levels, invite code — explicitly pays nothing |
 | Rewards | `/rewards` | 7-day activity streak + First/10/50/100 Orders achievements |
+| Membership | `/membership` | Free / Silver / Gold / Platinum, earned by completed orders — never purchased |
 | Notifications | `/notifications` | Unread badge, deep links |
 | Profile | `/profile` | Personal info, payment methods, notification prefs, language |
 | Security | `/security` | Password, 2FA, active sessions, login history |
@@ -206,6 +207,10 @@ so it **cannot** be mistaken for, or repurposed into, one:
   transferred. There is no bank, card or crypto integration anywhere in the codebase.
 - **Simulated rewards are never presented as withdrawable earnings**, and the app never asks a user to
   deposit money to unlock a task, a tier or a payout.
+- **Membership levels are earned, never sold.** Your level is a pure function of completed orders. No
+  level can be bought, and the screen states in plain language that a level never changes a reward rate,
+  a withdrawal limit, or unlocks earnings — the paid "VIP tier" ladder is the core monetisation of real
+  task-scam platforms.
 - **The Team screen pays nothing.** It states plainly that inviting people earns no commission, no
   percentage and no guaranteed return, and notes that income-from-recruitment promises are a hallmark of
   task scams.
@@ -239,7 +244,7 @@ src/
 │   ├── product/ order/ wallet/
 └── screens/
     ├── auth/                # Login, Register, ForgotPassword
-    ├── user/                # 19 user screens
+    ├── user/                # 20 user screens
     └── admin/               # 13 admin screens
 ```
 

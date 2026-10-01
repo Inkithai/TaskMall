@@ -24,6 +24,7 @@ import Withdraw from './screens/user/Withdraw'
 import Transactions from './screens/user/Transactions'
 import Team from './screens/user/Team'
 import Rewards from './screens/user/Rewards'
+import Membership from './screens/user/Membership'
 import Notifications from './screens/user/Notifications'
 import Profile from './screens/user/Profile'
 import Security from './screens/user/Security'
@@ -119,6 +120,7 @@ export default function App() {
 
         <Route path="/team" element={<Team />} />
         <Route path="/rewards" element={<Rewards />} />
+        <Route path="/membership" element={<Membership />} />
         <Route path="/notifications" element={<Notifications />} />
 
         <Route path="/profile" element={<Profile />} />

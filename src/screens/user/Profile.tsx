@@ -7,6 +7,7 @@ import {
   HelpCircle,
   Info,
   LogOut,
+  Medal,
   Receipt,
   ShieldCheck,
   UserRound,
@@ -16,9 +17,12 @@ import { Card } from '../../components/ui/primitives'
 import { Badge } from '../../components/ui/Badge'
 import { useApp, useUnreadCount, useWalletTotals } from '../../store/AppContext'
 import { lkr } from '../../lib/format'
+import { TierBadge } from '../../components/membership/TierBadge'
+import { tierFor } from '../../data/membership'
 
 const MENU = [
   { to: '/profile/personal', label: 'Personal Information', Icon: UserRound },
+  { to: '/membership', label: 'Membership', Icon: Medal },
   { to: '/security', label: 'Security', Icon: ShieldCheck },
   { to: '/profile/payment-methods', label: 'Payment Methods', Icon: CreditCard },
   { to: '/wallet/transactions', label: 'Transaction History', Icon: Receipt },
@@ -35,6 +39,7 @@ export default function Profile() {
   const navigate = useNavigate()
 
   const completed = state.orders.filter((o) => o.status === 'completed').length
+  const tier = tierFor(state.lifetimeCompleted)
 
   return (
     <div className="pb-24">
@@ -48,6 +53,9 @@ export default function Profile() {
           </span>
           <p className="mt-2.5 text-[17px] font-extrabold">{state.user.name}</p>
           <p className="text-[11.5px] text-brand-100">{state.user.email}</p>
+          <Link to="/membership" className="mt-2">
+            <TierBadge tier={tier} />
+          </Link>
         </div>
       </div>
 
