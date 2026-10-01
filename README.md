@@ -67,7 +67,7 @@ Any non-empty values are accepted — the login forms are prefilled.
 
 | App | Route | Credentials |
 | --- | --- | --- |
-| User app | `/login` | `demo.user@example.com` / `demo1234` |
+| User app | `/login` | `071 234 2938` (any phone) / `taskmall` (any 4+ characters) |
 | Admin console | `/admin/login` | `admin` / `taskmall` |
 
 The admin sidebar has an **Open User App** link, and the user Profile screen links back to the console, so
@@ -78,15 +78,44 @@ To wipe all local changes and regenerate the dataset: **Profile → Reset demo d
 
 ## What's in the build
 
-- **20 user screens** in a `430px` mobile shell — fixed bottom nav (Home / Orders / Wallet / Team / Me)
-  and a blue circular **Support** FAB floating above it.
+- **Sinhala-first bilingual interface** — the user app defaults to Sinhala (සිංහල) with an instant
+  English toggle on the login screen and in **My → Language**. Tab labels stay in English, exactly as the
+  studied reference platform renders them. Safety copy (demo ribbons, simulation notices) is always shown
+  in **both** languages.
+- **Tab bar mirrors the reference platform**: **Home / Rent / Team / Revenue / My** — see
+  [Layout mirroring](#layout-mirroring-the-reference-platform) below.
+- **20 user screens** in a `430px` mobile shell — fixed bottom nav and a blue circular **Support** FAB
+  floating above it.
 - **13 admin screens** in a desktop layout with a collapsible dark-navy sidebar.
-- **Full state machine** — accepting a task debits capital, completing it returns capital plus the reward,
+- **Full state machine** — grabbing a task debits capital, completing it returns capital plus the reward,
   a timeout refunds capital with no reward. Wallet, orders, ledger, notifications and the admin tables all
   read from the same store, so an action in one place shows up everywhere.
 - **Deterministic seed data** — a seeded PRNG and a fixed demo clock (`2026‑10‑01 13:05`) mean the numbers
   are the same on every load and reconcile exactly.
 - **Hand-rolled SVG charts** (area, bar, donut, split bar, sparkline) — no charting dependency.
+
+## Layout mirroring: the reference platform
+
+The user app deliberately reproduces the structure of a real Sri Lankan task platform
+(`smatowl6.com`, studied in [docs/task-scam-red-flags.md](docs/task-scam-red-flags.md)) so that the
+interface grammar of the genre can be recognised on sight:
+
+| Reference element | In TaskMall |
+| --- | --- |
+| `+94` phone-number login, Sinhala field copy, "Log in now" CTA | `/login` — same layout and phrasing |
+| Tab bar: Home / Rent / Team / Revenue / My | Same five tabs, same English labels |
+| Rent store tab with rentable merchandise | `/rent` — the catalogue, with rent fees and "Grab Task" pills |
+| Revenue tab (earnings + orders) | `/revenue` — earnings summary over the order list |
+| Promo banner carousel on Home | `<BannerCarousel />` — 5 auto-rotating bilingual slides |
+| Scrolling notice bar / withdrawal ticker | `<NoticeBar />` — every ticker entry tagged **simulated** |
+
+Two Home banners and one marquee announcement carry the demo's counter-message (recruitment pays nothing;
+no real money) so the familiar chrome tells the truth. What is **not** reproduced: deposits to unlock
+tasks, purchasable VIP tiers, negative balances, withdrawal fees, recruitment commission, or any external
+"handler" — the cash-flow inversion that defines the fraud (see **Safety posture** below).
+
+Legacy routes still work: `/products` redirects to `/rent`, `/orders` to `/revenue`; deep links such as
+`/orders/:orderNumber` and `/products/:productId` are unchanged.
 
 ## Screens
 
@@ -94,14 +123,14 @@ To wipe all local changes and regenerate the dataset: **Profile → Reset demo d
 
 | Screen | Route | Notes |
 | --- | --- | --- |
-| Login | `/login` | Simulation ribbon + `DEMO / SIMULATION — NO REAL MONEY` notice |
-| Register | `/register` | Name, email, phone, password, optional invite code |
+| Login | `/login` | Phone (`+94`) + password, Sinhala-first copy, language toggle, simulation ribbon |
+| Register | `/register` | Name, phone, password, optional email, prominent invite code (grants nothing) |
 | Forgot Password | `/forgot-password` | Simulated reset link, no email sent |
-| Home | `/home` | Balance, today's reward, task progress `12/15`, quick actions, active packages, recent orders |
-| Orders | `/orders` | Tabs: All / Pending / Completed / Time Out |
+| Home | `/home` | Banner carousel, notice marquee + simulated withdrawal ticker, balance, task progress, quick actions, active packages |
+| **Rent** | `/rent` | The store tab — category rail, catalogue grid, rent fee + reward rate, orange "Grab Task" pills |
+| Revenue | `/revenue` | Earnings summary + orders. Tabs: All / Pending / Completed / Time Out (`/orders` redirects here) |
 | Order Details | `/orders/:orderNumber` | Amount, income ratio, reward, status timeline, linked package |
-| Product List | `/products` | Category rail, grid of catalogue items |
-| Product Details | `/products/:productId` | Full product view — tapping a product never starts an order |
+| Product Details | `/products/:productId` | Full product view — orange **Grab Order** CTA, confirming never takes real payment |
 | Product Package Info | `/products/:productId/package` | Weight, dimensions, handling, shipping fee |
 | Packages | `/packages` | All shipments with live status |
 | **Package Details** | `/packages/:packageId` | Status card, package info, courier, tracking timeline, address, contents, dimensions |
@@ -113,10 +142,10 @@ To wipe all local changes and regenerate the dataset: **Profile → Reset demo d
 | Rewards | `/rewards` | 7-day activity streak + First/10/50/100 Orders achievements |
 | Membership | `/membership` | Free / Silver / Gold / Platinum, earned by completed orders — never purchased |
 | Notifications | `/notifications` | Unread badge, deep links |
-| Profile | `/profile` | Personal info, payment methods, notification prefs, language |
+| Profile ("My") | `/profile` | Personal info, payment methods, notification prefs, language (switches UI to si/en) |
 | Security | `/security` | Password, 2FA, active sessions, login history |
 | Help & Support | `/support` | **Internal** help centre + ticket thread |
-| About | `/about` | What's simulated and why |
+| About | `/about` | What's simulated and why — including the reference-mirroring note |
 
 ### Admin console
 
@@ -219,7 +248,8 @@ Task-based "earn money" platforms are a well-documented fraud pattern, so this d
 so it **cannot** be mistaken for, or repurposed into, one:
 
 - Every monetary value is labelled **simulated**, and a demo notice appears on Login, Wallet, Recharge,
-  Withdraw, Team and About.
+  Withdraw, Team and About. The scrolling withdrawal ticker on Home tags every entry **simulated**, and the
+  demo ribbon is permanently bilingual (English + Sinhala) so the framing survives every language choice.
 - **Recharge and withdrawal are simulations.** Both end on a receipt that states no real funds were
   transferred. There is no bank, card or crypto integration anywhere in the codebase.
 - **Simulated rewards are never presented as withdrawable earnings**, and the app never asks a user to
@@ -250,12 +280,13 @@ src/
 ├── App.tsx                  # Routing, auth guards
 ├── main.tsx                 # BrowserRouter + AppProvider
 ├── index.css                # Tailwind v4 @theme tokens + utilities
-├── lib/                     # format (LKR, dates, IDs), rng, clock
+├── lib/                     # format (LKR, dates, IDs), rng, clock, i18n (si/en)
 ├── data/                    # types, products, packages, seed
 ├── store/AppContext.tsx     # Reducer, persistence, selectors
 ├── components/
 │   ├── ui/                  # primitives, Badge, Tabs, Progress, Timeline, Modal, Toasts
 │   ├── layout/              # Logo, MobileShell, BottomNav, SupportFab, Headers
+│   ├── home/                # BannerCarousel, NoticeBar (marquee + ticker)
 │   ├── admin/               # AdminShell, DataTable, StatCard, Panel
 │   ├── charts/              # SVG AreaChart, BarChart, DonutChart, SplitBar, Sparkline
 │   ├── product/ order/ wallet/
@@ -277,5 +308,7 @@ No backend, no API client, no state library, no chart library.
 - **Frontend only.** Every mutation is local; clearing site data resets everything.
 - The demo clock starts at `2026‑10‑01 13:05` and then ticks in real time, so relative timestamps drift
   the longer a tab stays open. Reload to re-pin it.
-- Internationalisation is a stub — the language picker stores a preference but no translations ship.
+- Bilingual, not fully translated: Sinhala and English cover the login, register, home, rent, revenue,
+  order cards and "My" surfaces; deeper screens (wallet, packages, team, admin console) fall back to
+  English. Tamil / Bahasa / Español store a profile preference only.
 - Product imagery is AI-generated and the brands on the packaging are invented.

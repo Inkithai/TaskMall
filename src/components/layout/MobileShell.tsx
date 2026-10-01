@@ -8,10 +8,10 @@ import {
   Info,
   LayoutGrid,
   LogOut,
-  Package,
   Settings,
   ShieldCheck,
-  ShoppingBag,
+  Store,
+  TrendingUp,
   Truck,
   User,
   Users,
@@ -22,6 +22,7 @@ import { BottomNav } from './BottomNav'
 import { SupportFab } from './SupportFab'
 import { LogoMark, Wordmark } from './Logo'
 import { useApp, useUnreadCount } from '../../store/AppContext'
+import { useLang } from '../../lib/i18n'
 import { Toasts } from '../ui/Toasts'
 import { cx } from '../ui/primitives'
 import { Badge } from '../ui/Badge'
@@ -32,41 +33,42 @@ interface ShellValue {
 const ShellContext = createContext<ShellValue>({ openMenu: () => {} })
 export const useShell = () => useContext(ShellContext)
 
-const MENU_GROUPS: { title: string; items: { to: string; label: string; Icon: typeof Home }[] }[] = [
+const MENU_GROUPS: { titleKey: string; items: { to: string; labelKey: string; Icon: typeof Home }[] }[] = [
   {
-    title: 'Main',
+    titleKey: 'drawer.main',
     items: [
-      { to: '/home', label: 'Home', Icon: Home },
-      { to: '/orders', label: 'Orders', Icon: Package },
-      { to: '/products', label: 'Product List', Icon: ShoppingBag },
-      { to: '/packages', label: 'My Packages', Icon: Truck },
+      { to: '/home', labelKey: 'drawer.mainHome', Icon: Home },
+      { to: '/revenue', labelKey: 'drawer.orders', Icon: TrendingUp },
+      { to: '/rent', labelKey: 'drawer.rentList', Icon: Store },
+      { to: '/packages', labelKey: 'drawer.myPackages', Icon: Truck },
     ],
   },
   {
-    title: 'Wallet',
+    titleKey: 'drawer.wallet',
     items: [
-      { to: '/wallet', label: 'Wallet', Icon: Wallet },
-      { to: '/wallet/recharge', label: 'Recharge Simulation', Icon: LayoutGrid },
-      { to: '/wallet/withdraw', label: 'Withdrawal Simulation', Icon: LayoutGrid },
-      { to: '/wallet/transactions', label: 'Transaction History', Icon: LayoutGrid },
+      { to: '/wallet', labelKey: 'drawer.wallet', Icon: Wallet },
+      { to: '/wallet/recharge', labelKey: 'drawer.rechargeSim', Icon: LayoutGrid },
+      { to: '/wallet/withdraw', labelKey: 'drawer.withdrawSim', Icon: LayoutGrid },
+      { to: '/wallet/transactions', labelKey: 'drawer.txHistory', Icon: LayoutGrid },
     ],
   },
   {
-    title: 'Account',
+    titleKey: 'drawer.account',
     items: [
-      { to: '/team', label: 'My Team', Icon: Users },
-      { to: '/rewards', label: 'Rewards', Icon: Gift },
-      { to: '/notifications', label: 'Notifications', Icon: Bell },
-      { to: '/profile', label: 'Profile', Icon: User },
-      { to: '/security', label: 'Security', Icon: ShieldCheck },
-      { to: '/support', label: 'Help & Support', Icon: Headset },
-      { to: '/about', label: 'About TaskMall', Icon: Info },
+      { to: '/team', labelKey: 'drawer.myTeam', Icon: Users },
+      { to: '/rewards', labelKey: 'drawer.rewards', Icon: Gift },
+      { to: '/notifications', labelKey: 'drawer.notifications', Icon: Bell },
+      { to: '/profile', labelKey: 'drawer.profile', Icon: User },
+      { to: '/security', labelKey: 'drawer.security', Icon: ShieldCheck },
+      { to: '/support', labelKey: 'drawer.support', Icon: Headset },
+      { to: '/about', labelKey: 'drawer.about', Icon: Info },
     ],
   },
 ]
 
 function Drawer({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { state, dispatch } = useApp()
+  const { t } = useLang()
   const navigate = useNavigate()
   const unread = useUnreadCount()
 
@@ -111,10 +113,12 @@ function Drawer({ open, onClose }: { open: boolean; onClose: () => void }) {
 
         <nav className="flex-1 overflow-y-auto px-2.5 py-3">
           {MENU_GROUPS.map((group) => (
-            <div key={group.title} className="mb-3">
-              <p className="px-2.5 pb-1 text-[10px] font-bold tracking-[0.09em] text-faint uppercase">{group.title}</p>
+            <div key={group.titleKey} className="mb-3">
+              <p className="px-2.5 pb-1 text-[10px] font-bold tracking-[0.09em] text-faint uppercase">
+                {t(group.titleKey)}
+              </p>
               <ul>
-                {group.items.map(({ to, label, Icon }) => (
+                {group.items.map(({ to, labelKey, Icon }) => (
                   <li key={to}>
                     <Link
                       to={to}
@@ -122,7 +126,7 @@ function Drawer({ open, onClose }: { open: boolean; onClose: () => void }) {
                       className="flex items-center gap-2.5 rounded-[10px] px-2.5 py-2 text-[13.5px] font-medium text-ink transition-colors hover:bg-brand-50 hover:text-brand-700"
                     >
                       <Icon size={17} className="shrink-0 text-muted" />
-                      <span className="flex-1">{label}</span>
+                      <span className="flex-1">{t(labelKey, labelKey)}</span>
                       {to === '/notifications' && unread > 0 && (
                         <Badge tone="danger" className="!px-1.5 !text-[9px]">
                           {unread}
@@ -142,7 +146,7 @@ function Drawer({ open, onClose }: { open: boolean; onClose: () => void }) {
               className="flex items-center gap-2.5 rounded-[10px] px-2.5 py-2 text-[13.5px] font-medium text-ink transition-colors hover:bg-brand-50 hover:text-brand-700"
             >
               <Settings size={17} className="shrink-0 text-muted" />
-              Admin Console
+              {t('drawer.admin')}
             </Link>
             <button
               type="button"
@@ -154,25 +158,22 @@ function Drawer({ open, onClose }: { open: boolean; onClose: () => void }) {
               className="flex w-full items-center gap-2.5 rounded-[10px] px-2.5 py-2 text-[13.5px] font-medium text-danger transition-colors hover:bg-danger-soft"
             >
               <LogOut size={17} className="shrink-0" />
-              Logout
+              {t('drawer.logout')}
             </button>
           </div>
         </nav>
 
-        <p className="border-t border-hairline px-4 py-3 text-[10.5px] leading-snug text-faint">
-          TaskMall demo build · all monetary values are simulated.
-        </p>
+        <p className="border-t border-hairline px-4 py-3 text-[10.5px] leading-snug text-faint">{t('drawer.footnote')}</p>
       </aside>
     </div>
   )
 }
 
 export function DemoRibbon() {
+  const { t } = useLang()
   return (
     <div className="relative z-40 shrink-0 bg-navy px-3 py-[5px] text-center">
-      <p className="text-[9.5px] leading-tight font-bold tracking-[0.1em] text-brand-200 uppercase">
-        Demo / Simulation — No Real Money
-      </p>
+      <p className="text-[9.5px] leading-tight font-bold tracking-[0.1em] text-brand-200 uppercase">{t('ribbon.demo')}</p>
     </div>
   )
 }

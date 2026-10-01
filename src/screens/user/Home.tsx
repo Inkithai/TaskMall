@@ -8,7 +8,8 @@ import {
   Gift,
   Menu,
   Package,
-  ShoppingBag,
+  Store,
+  TrendingUp,
   Truck,
   Users,
   Wallet,
@@ -19,20 +20,17 @@ import { Card, SectionTitle, cx } from '../../components/ui/primitives'
 import { Badge, PackageStatusBadge, SimulatedTag } from '../../components/ui/Badge'
 import { SegmentedProgress } from '../../components/ui/Progress'
 import { ProductThumb } from '../../components/product/ProductThumb'
-import { greeting, lkr, relative, shortOrder, signedLkr } from '../../lib/format'
+import { BannerCarousel } from '../../components/home/BannerCarousel'
+import { NoticeBar } from '../../components/home/NoticeBar'
+import { lkr, relative, shortOrder, signedLkr } from '../../lib/format'
 import { demoNow, isToday, useNow } from '../../lib/clock'
+import { useLang } from '../../lib/i18n'
 import { PACKAGE_STATUS_META } from '../../data/packages'
-
-const QUICK_ACTIONS = [
-  { to: '/orders', label: 'Orders', Icon: Package, tint: 'from-[#3b82f6] to-[#2563eb]' },
-  { to: '/products', label: 'Product List', Icon: ShoppingBag, tint: 'from-[#60a5fa] to-[#3b82f6]' },
-  { to: '/wallet', label: 'Wallet', Icon: Wallet, tint: 'from-[#38bdf8] to-[#0ea5e9]' },
-  { to: '/team', label: 'Team', Icon: Users, tint: 'from-[#818cf8] to-[#6366f1]' },
-]
 
 export default function Home() {
   const { state, dailyTarget } = useApp()
   const { openMenu } = useShell()
+  const { t, fmt } = useLang()
   const unread = useUnreadCount()
   const totals = useWalletTotals()
   const now = useNow(30_000)
@@ -69,10 +67,25 @@ export default function Home() {
 
   const firstName = state.user.name.split(' ')[0]
 
+  const greetingKey = useMemo(() => {
+    const h = now.getHours()
+    if (h < 12) return 'greet.morning'
+    if (h < 17) return 'greet.afternoon'
+    if (h < 21) return 'greet.evening'
+    return 'greet.night'
+  }, [now])
+
+  const quickActions = [
+    { to: '/rent', label: t('home.rent'), Icon: Store, tint: 'from-[#fb923c] to-[#ea580c]' },
+    { to: '/revenue', label: t('home.revenue'), Icon: TrendingUp, tint: 'from-[#3b82f6] to-[#2563eb]' },
+    { to: '/wallet', label: t('home.wallet'), Icon: Wallet, tint: 'from-[#38bdf8] to-[#0ea5e9]' },
+    { to: '/team', label: t('home.team'), Icon: Users, tint: 'from-[#818cf8] to-[#6366f1]' },
+  ]
+
   return (
     <div className="pb-24">
-      {/* Gradient header */}
-      <div className="tm-gradient relative px-4 pt-3 pb-20">
+      {/* Gradient header with promo carousel, like the reference home tab */}
+      <div className="tm-gradient relative px-4 pt-3 pb-6">
         <div className="flex items-center justify-between">
           <button
             type="button"
@@ -97,18 +110,25 @@ export default function Home() {
           </Link>
         </div>
 
-        <div className="mt-4">
-          <p className="text-[12.5px] font-medium text-brand-100">{greeting(now)},</p>
+        <div className="mt-3">
+          <p className="text-[12.5px] font-medium text-brand-100">{t(greetingKey)},</p>
           <p className="text-[21px] leading-tight font-extrabold text-white">{firstName} 👋</p>
+        </div>
+
+        <div className="mt-4">
+          <BannerCarousel />
         </div>
       </div>
 
-      <div className="-mt-14 space-y-4 px-4">
+      <div className="space-y-4 px-4 pt-3">
+        {/* Notice marquee + simulated withdrawal ticker */}
+        <NoticeBar />
+
         {/* Balance card */}
         <Card className="tm-rise overflow-hidden !p-0">
           <div className="p-4">
             <div className="flex items-center gap-2">
-              <span className="text-[10.5px] font-bold tracking-[0.1em] text-muted uppercase">Simulated Balance</span>
+              <span className="text-[10.5px] font-bold tracking-[0.1em] text-muted uppercase">{t('home.balance')}</span>
               <SimulatedTag compact />
             </div>
             <p className="mt-1 text-[30px] leading-none font-extrabold tracking-[-0.02em] tnum text-navy">
@@ -117,11 +137,11 @@ export default function Home() {
 
             <div className="mt-3 flex items-end justify-between gap-3">
               <div>
-                <p className="text-[11px] font-medium text-muted">Today&apos;s Reward</p>
+                <p className="text-[11px] font-medium text-muted">{t('home.todayReward')}</p>
                 <p className="text-[17px] leading-tight font-bold tnum text-reward">{lkr(stats.todayReward)}</p>
               </div>
               <div className="text-right">
-                <p className="text-[11px] font-medium text-muted">Available / Pending</p>
+                <p className="text-[11px] font-medium text-muted">{t('home.availablePending')}</p>
                 <p className="text-[12.5px] font-semibold tnum text-ink">
                   {lkr(totals.available)} <span className="text-faint">/</span>{' '}
                   <span className="text-pending">{lkr(totals.pending)}</span>
@@ -135,13 +155,13 @@ export default function Home() {
               to="/wallet/recharge"
               className="tm-gradient flex h-11 items-center justify-center gap-1.5 rounded-xl text-[13.5px] font-bold text-white shadow-[0_4px_14px_rgba(37,99,235,0.28)] transition-transform active:scale-[0.98]"
             >
-              <ArrowDownToLine size={16} /> Recharge
+              <ArrowDownToLine size={16} /> {t('home.recharge')}
             </Link>
             <Link
               to="/wallet/withdraw"
               className="flex h-11 items-center justify-center gap-1.5 rounded-xl bg-brand-50 text-[13.5px] font-bold text-brand-700 transition-colors hover:bg-brand-100 active:bg-brand-200"
             >
-              <ArrowUpFromLine size={16} /> Withdraw
+              <ArrowUpFromLine size={16} /> {t('home.withdraw')}
             </Link>
           </div>
         </Card>
@@ -150,18 +170,18 @@ export default function Home() {
         <Card>
           <SectionTitle
             action={
-              <Link to="/orders" className="flex items-center text-[12px] font-semibold text-brand-700">
-                View all <ChevronRight size={14} />
+              <Link to="/revenue" className="flex items-center text-[12px] font-semibold text-brand-700">
+                {t('common.viewAll')} <ChevronRight size={14} />
               </Link>
             }
           >
-            Today&apos;s Tasks
+            {t('home.todaysTasks')}
           </SectionTitle>
           <div className="grid grid-cols-3 gap-2">
             {[
-              { label: 'Completed', value: stats.completed, tone: 'ok' as const, to: '/orders?tab=completed' },
-              { label: 'Pending', value: stats.pending, tone: 'pending' as const, to: '/orders?tab=pending' },
-              { label: 'Time Out', value: stats.timeout, tone: 'danger' as const, to: '/orders?tab=timeout' },
+              { label: t('home.completed'), value: stats.completed, tone: 'ok' as const, to: '/revenue?tab=completed' },
+              { label: t('home.pending'), value: stats.pending, tone: 'pending' as const, to: '/revenue?tab=pending' },
+              { label: t('home.timeout'), value: stats.timeout, tone: 'danger' as const, to: '/revenue?tab=timeout' },
             ].map((s) => (
               <Link
                 key={s.label}
@@ -192,21 +212,22 @@ export default function Home() {
         {/* Progress */}
         <Card>
           <div className="mb-2.5 flex items-baseline justify-between">
-            <h2 className="text-[15px] font-semibold text-navy">Today&apos;s Progress</h2>
+            <h2 className="text-[15px] font-semibold text-navy">{t('home.todaysProgress')}</h2>
             <span className="text-[12.5px] font-bold tnum text-brand-700">
               {stats.completed} / {dailyTarget}
             </span>
           </div>
           <SegmentedProgress value={stats.completed} max={dailyTarget} />
           <p className="mt-2 text-[11.5px] text-muted">
-            {stats.completed} of {dailyTarget} simulated tasks completed
-            {stats.completed < dailyTarget && ` · ${dailyTarget - stats.completed} remaining today`}
+            {fmt(t('home.progressNote'), { done: String(stats.completed), total: String(dailyTarget) })}
+            {stats.completed < dailyTarget &&
+              ` · ${fmt(t('home.progressRemaining'), { count: String(dailyTarget - stats.completed) })}`}
           </p>
         </Card>
 
         {/* Quick actions */}
         <div className="grid grid-cols-4 gap-2">
-          {QUICK_ACTIONS.map(({ to, label, Icon, tint }) => (
+          {quickActions.map(({ to, label, Icon, tint }) => (
             <Link
               key={to}
               to={to}
@@ -231,11 +252,11 @@ export default function Home() {
             <SectionTitle
               action={
                 <Link to="/packages" className="flex items-center text-[12px] font-semibold text-brand-700">
-                  All packages <ChevronRight size={14} />
+                  {t('home.allPackages')} <ChevronRight size={14} />
                 </Link>
               }
             >
-              Packages on the Move
+              {t('home.packages')}
             </SectionTitle>
             <div className="no-scrollbar -mx-4 flex gap-2.5 overflow-x-auto px-4 pb-1">
               {activePackages.map((order) => {
@@ -278,11 +299,11 @@ export default function Home() {
           <SectionTitle
             action={
               <Link to="/wallet/transactions" className="flex items-center text-[12px] font-semibold text-brand-700">
-                History <ChevronRight size={14} />
+                {t('home.history')} <ChevronRight size={14} />
               </Link>
             }
           >
-            Recent Activity
+            {t('home.recentActivity')}
           </SectionTitle>
           <Card className="!p-0">
             <ul className="divide-y divide-hairline">
@@ -296,20 +317,18 @@ export default function Home() {
                       <Package size={15} />
                     </span>
                     <div className="min-w-0 flex-1">
-                      <p className="text-[13px] font-semibold text-navy">Order completed</p>
+                      <p className="text-[13px] font-semibold text-navy">{t('home.orderCompleted')}</p>
                       <p className="truncate text-[11px] tnum text-muted">Order {shortOrder(order.orderNumber)}</p>
                     </div>
                     <div className="shrink-0 text-right">
                       <p className="text-[13px] font-bold tnum text-reward">{signedLkr(order.reward)}</p>
-                      <p className="text-[10.5px] text-faint">
-                        {relative(order.completedAt!, demoNow())}
-                      </p>
+                      <p className="text-[10.5px] text-faint">{relative(order.completedAt!, demoNow())}</p>
                     </div>
                   </Link>
                 </li>
               ))}
               {recent.length === 0 && (
-                <li className="px-4 py-6 text-center text-[13px] text-muted">No completed tasks yet.</li>
+                <li className="px-4 py-6 text-center text-[13px] text-muted">{t('home.noCompleted')}</li>
               )}
             </ul>
           </Card>
@@ -321,12 +340,12 @@ export default function Home() {
             <Gift size={19} />
           </span>
           <div className="min-w-0 flex-1">
-            <p className="text-[13.5px] font-bold text-navy">Daily Activity</p>
+            <p className="text-[13.5px] font-bold text-navy">{t('home.dailyActivity')}</p>
             <p className="text-[11.5px] text-muted">
-              {state.dailyCheckIn.filter((d) => d.claimed).length} of 7 days checked in
+              {state.dailyCheckIn.filter((d) => d.claimed).length} {t('home.checkedIn')}
             </p>
           </div>
-          <Badge tone="info">Rewards</Badge>
+          <Badge tone="info">{t('drawer.rewards')}</Badge>
           <ChevronRight size={16} className="text-faint" />
         </Link>
       </div>

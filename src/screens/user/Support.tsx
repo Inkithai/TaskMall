@@ -11,7 +11,7 @@ import { demoNow } from '../../lib/clock'
 const ARTICLES = [
   {
     q: 'How do orders work?',
-    a: 'Pick a product from the Product List and start a task. TaskMall creates an order with a number, an amount, a reward rate and a 24-hour effective window. While the task is open, its simulated capital is held in your wallet\'s Pending bucket. Completing the task returns the capital in full and credits the reward.',
+    a: 'Pick a product from the Rent tab and grab a task. TaskMall creates an order with a number, an amount, a reward rate and a 24-hour effective window. While the task is open, its simulated capital is held in your wallet\'s Pending bucket. Completing the task returns the capital in full and credits the reward.',
   },
   {
     q: 'How are rewards calculated?',
