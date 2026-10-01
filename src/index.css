@@ -1,0 +1,219 @@
+@import 'tailwindcss';
+
+/* ------------------------------------------------------------------ *
+ * TaskMall design system
+ * Clean e-commerce / fintech: blue primary, soft grey canvas, white
+ * cards, rounded corners, small shadows, compact spacing.
+ * ------------------------------------------------------------------ */
+@theme {
+  /* Brand blues */
+  --color-brand-50: #eff5ff;
+  --color-brand-100: #dbe8fe;
+  --color-brand-200: #bfd7fe;
+  --color-brand-300: #93bbfd;
+  --color-brand-400: #609afa;
+  --color-brand-500: #3b82f6;
+  --color-brand-600: #2563eb;
+  --color-brand-700: #1d4ed8;
+  --color-brand-800: #1e40af;
+  --color-brand-900: #1b3a94;
+
+  /* Surfaces */
+  --color-canvas: #f5f7fa;
+  --color-card: #ffffff;
+  --color-hairline: #e9edf4;
+
+  /* Type */
+  --color-navy: #0f1f3d;
+  --color-ink: #1b2a4a;
+  --color-muted: #6b7a90;
+  --color-faint: #93a1b5;
+
+  /* Financial + status semantics */
+  --color-amount: #e03131;
+  --color-reward: #2563eb;
+  --color-ok: #0f9d74;
+  --color-ok-soft: #e6f7f1;
+  --color-pending: #f08c1a;
+  --color-pending-soft: #fff3e2;
+  --color-danger: #e03131;
+  --color-danger-soft: #fdecec;
+  --color-info-soft: #e8f1ff;
+
+  --radius-card: 16px;
+
+  --shadow-card: 0 1px 2px rgb(15 31 61 / 0.04), 0 4px 16px rgb(15 31 61 / 0.06);
+  --shadow-float: 0 8px 24px rgb(15 31 61 / 0.14);
+  --shadow-nav: 0 -2px 18px rgb(15 31 61 / 0.08);
+
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    sans-serif;
+}
+
+@layer base {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    margin: 0;
+    background: var(--color-canvas);
+    color: var(--color-navy);
+    font-family: var(--font-sans);
+    font-feature-settings: 'cv11', 'ss01';
+    font-variant-numeric: tabular-nums;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  button {
+    font: inherit;
+    cursor: pointer;
+  }
+
+  input,
+  select,
+  textarea {
+    font: inherit;
+    color: inherit;
+  }
+
+  /* Tabular figures for every money/ID readout */
+  .tnum {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
+}
+
+@layer components {
+  .tm-card {
+    background: var(--color-card);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+  }
+
+  .tm-gradient {
+    background-image: linear-gradient(135deg, #2563eb 0%, #1d4ed8 48%, #1b3a94 100%);
+  }
+
+  .tm-gradient-soft {
+    background-image: linear-gradient(135deg, #eff5ff 0%, #dbe8fe 100%);
+  }
+
+  /* Field */
+  .tm-field {
+    width: 100%;
+    border-radius: 12px;
+    border: 1px solid var(--color-hairline);
+    background: #fbfcfe;
+    padding: 0.75rem 0.875rem;
+    font-size: 0.9375rem;
+    color: var(--color-navy);
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+  }
+
+  .tm-field::placeholder {
+    color: var(--color-faint);
+  }
+
+  .tm-field:focus {
+    background: #fff;
+    border-color: var(--color-brand-400);
+    box-shadow: 0 0 0 3px rgb(59 130 246 / 0.14);
+  }
+
+  .tm-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-ink);
+    margin-bottom: 0.375rem;
+    letter-spacing: 0.01em;
+  }
+}
+
+/* Hide scrollbars on horizontal chip rails */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Entrance motion */
+@keyframes tm-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.tm-rise {
+  animation: tm-rise 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes tm-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.tm-pop {
+  animation: tm-pop 0.26s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes tm-slide-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+.tm-slide-up {
+  animation: tm-slide-up 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes tm-pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgb(37 99 235 / 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgb(37 99 235 / 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgb(37 99 235 / 0);
+  }
+}
+.tm-pulse-ring {
+  animation: tm-pulse-ring 2.4s ease-out infinite;
+}
+
+@keyframes tm-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
