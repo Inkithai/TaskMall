@@ -1,13 +1,36 @@
 import { NavLink, useLocation } from 'react-router-dom'
-import { Home, Package, Wallet, Users, User } from 'lucide-react'
+import { Home, Store, Users, TrendingUp, User } from 'lucide-react'
 import { cx } from '../ui/primitives'
 
+/**
+ * Tab bar mirroring the reference task platform: Home / Rent / Team /
+ * Revenue / My. The labels stay in English exactly as the reference renders
+ * them — English chrome over Sinhala body copy is part of that genre's look.
+ */
 const ITEMS = [
   { to: '/home', label: 'Home', Icon: Home, match: ['/home'] },
-  { to: '/orders', label: 'Orders', Icon: Package, match: ['/orders', '/packages', '/products'] },
-  { to: '/wallet', label: 'Wallet', Icon: Wallet, match: ['/wallet'] },
+  { to: '/rent', label: 'Rent', Icon: Store, match: ['/rent', '/products', '/packages'] },
   { to: '/team', label: 'Team', Icon: Users, match: ['/team', '/rewards'] },
-  { to: '/profile', label: 'Me', Icon: User, match: ['/profile', '/security', '/support', '/about'] },
+  {
+    to: '/revenue',
+    label: 'Revenue',
+    Icon: TrendingUp,
+    match: ['/revenue', '/orders'],
+  },
+  {
+    to: '/profile',
+    label: 'My',
+    Icon: User,
+    match: [
+      '/profile',
+      '/security',
+      '/support',
+      '/about',
+      '/membership',
+      '/wallet',
+      '/notifications',
+    ],
+  },
 ]
 
 export function BottomNav() {

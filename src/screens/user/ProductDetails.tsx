@@ -7,6 +7,7 @@ import { Badge, DemoNotice, SimulatedTag } from '../../components/ui/Badge'
 import { Sheet } from '../../components/ui/Modal'
 import { ProductThumb } from '../../components/product/ProductThumb'
 import { useApp, useProduct, useWalletTotals } from '../../store/AppContext'
+import { useLang } from '../../lib/i18n'
 import { lkr, pct } from '../../lib/format'
 import { shippingFeeFor } from '../../data/packages'
 
@@ -14,6 +15,7 @@ export default function ProductDetails() {
   const { productId } = useParams()
   const product = useProduct(productId)
   const { state, dispatch, toast } = useApp()
+  const { t } = useLang()
   const { available } = useWalletTotals()
   const navigate = useNavigate()
   const [quantity, setQuantity] = useState(1)
@@ -41,7 +43,7 @@ export default function ProductDetails() {
       body: `${lkr(amount)} of simulated capital is now held. Complete the task to release it with the reward.`,
       tone: 'ok',
     })
-    navigate('/orders?tab=pending')
+    navigate('/revenue?tab=pending')
   }
 
   return (
@@ -154,9 +156,9 @@ export default function ProductDetails() {
 
         {/* Quantity + task */}
         <Card>
-          <SectionTitle>Start a Simulated Task</SectionTitle>
+          <SectionTitle>{t('product.grabTitle')}</SectionTitle>
           <div className="flex items-center justify-between">
-            <span className="text-[13px] font-medium text-muted">Quantity</span>
+            <span className="text-[13px] font-medium text-muted">{t('product.quantity')}</span>
             <div className="flex items-center gap-3">
               <button
                 type="button"
@@ -183,26 +185,27 @@ export default function ProductDetails() {
           <Divider className="my-3" />
 
           <div className="divide-y divide-hairline">
-            <DataRow label="Order amount" value={lkr(amount)} accent="amount" />
-            <DataRow label="Reward rate" value={pct(product.rewardRate)} />
-            <DataRow label="Simulated reward" value={lkr(reward)} accent="reward" />
-            <DataRow label="Available balance" value={lkr(available)} accent={canAfford ? 'ok' : 'amount'} />
+            <DataRow label={t('order.amount')} value={lkr(amount)} accent="amount" />
+            <DataRow label={t('product.rewardRate')} value={pct(product.rewardRate)} />
+            <DataRow label={t('order.simulatedReward')} value={lkr(reward)} accent="reward" />
+            <DataRow
+              label={t('product.availableBalance')}
+              value={lkr(available)}
+              accent={canAfford ? 'ok' : 'amount'}
+            />
           </div>
 
           <Button
             size="lg"
             block
-            className="mt-4"
+            className="tm-grab mt-4 !shadow-[0_6px_18px_rgba(234,88,12,0.35)]"
             disabled={!taskable || !canAfford}
             onClick={() => setConfirmOpen(true)}
           >
-            {!taskable ? 'Task unavailable' : canAfford ? 'Start Task' : 'Insufficient simulated balance'}
+            {!taskable ? t('product.grabUnavailable') : canAfford ? t('product.grab') : t('product.grabInsufficient')}
           </Button>
 
-          <p className="mt-2.5 text-[11px] leading-relaxed text-muted">
-            Starting a task holds {lkr(amount)} of <strong>simulated</strong> capital. It is returned in full the
-            moment the task completes or its effective time expires — no real payment is taken at any point.
-          </p>
+          <p className="mt-2.5 text-[11px] leading-relaxed text-muted">{t('product.grabNote')}</p>
         </Card>
 
         <DemoNotice>
@@ -214,13 +217,13 @@ export default function ProductDetails() {
       <Sheet
         open={confirmOpen}
         onClose={() => setConfirmOpen(false)}
-        title="Confirm simulated order"
+        title={t('product.confirmTitle')}
         footer={
           <div className="grid grid-cols-2 gap-2">
             <Button variant="outline" onClick={() => setConfirmOpen(false)}>
-              Cancel
+              {t('common.cancel')}
             </Button>
-            <Button onClick={startTask}>Create Order</Button>
+            <Button onClick={startTask}>{t('product.createOrder')}</Button>
           </div>
         }
       >

@@ -668,7 +668,7 @@ export function createSeed(now: Date = DEMO_EPOCH): SeedData {
     invitedBy: 'TASK10027',
     joined: addDays(now, -214).toISOString(),
     level: 2,
-    language: 'English',
+    language: 'සිංහල (Sinhala)',
     twoFactor: true,
     passwordChangedAt: addDays(now, -24).toISOString(),
     address: SAMPLE_ADDRESS,

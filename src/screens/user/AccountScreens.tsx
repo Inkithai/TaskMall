@@ -4,6 +4,7 @@ import { ScreenHeader } from '../../components/layout/Headers'
 import { Button, Card, Field, SectionTitle, Toggle, cx } from '../../components/ui/primitives'
 import { Badge, DemoNotice } from '../../components/ui/Badge'
 import { useApp } from '../../store/AppContext'
+import { useLang, type Lang } from '../../lib/i18n'
 import type { UserProfile } from '../../data/types'
 import { dateShort } from '../../lib/format'
 
@@ -216,36 +217,57 @@ export function NotificationSettings() {
 
 /* -------------------------------- Language ------------------------------- */
 
-const LANGUAGES = ['English', 'සිංහල (Sinhala)', 'தமிழ் (Tamil)', 'Bahasa Indonesia', 'Español']
+const LANGUAGES: { label: string; lang: Lang | null }[] = [
+  { label: 'සිංහල (Sinhala)', lang: 'si' },
+  { label: 'English', lang: 'en' },
+  { label: 'தமிழ் (Tamil)', lang: null },
+  { label: 'Bahasa Indonesia', lang: null },
+  { label: 'Español', lang: null },
+]
 
 export function Language() {
   const { state, dispatch, toast } = useApp()
+  const { lang, setLang } = useLang()
 
   return (
     <div className="pb-24">
-      <ScreenHeader title="Language" />
+      <ScreenHeader title="Language · භාෂාව" />
       <div className="space-y-3 px-4 pt-3">
         <Card className="!p-0">
           <ul className="divide-y divide-hairline">
-            {LANGUAGES.map((lang) => {
-              const active = state.user.language === lang
+            {LANGUAGES.map(({ label, lang: langCode }) => {
+              const active = langCode ? lang === langCode : state.user.language === label
               return (
-                <li key={lang}>
+                <li key={label}>
                   <button
                     type="button"
                     onClick={() => {
-                      dispatch({ type: 'profile/update', patch: { language: lang } })
-                      toast({
-                        title: 'Language preference saved',
-                        body: 'The demo interface remains in English.',
-                        tone: 'info',
-                      })
+                      if (langCode) {
+                        // English and Sinhala switch the interface immediately.
+                        setLang(langCode)
+                        dispatch({ type: 'profile/update', patch: { language: label } })
+                        toast({
+                          title: 'Language preference saved · භාෂා තේරීම සුරැකුණි',
+                          body:
+                            langCode === 'si'
+                              ? 'අතුරු මුහුණත සිංහල වෙත මාරු විය.'
+                              : 'The interface switched to English.',
+                          tone: 'info',
+                        })
+                      } else {
+                        dispatch({ type: 'profile/update', patch: { language: label } })
+                        toast({
+                          title: 'Language preference saved',
+                          body: 'Interface copy ships in English and Sinhala only — this preference is stored but does not translate the UI.',
+                          tone: 'info',
+                        })
+                      }
                     }}
                     className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors active:bg-canvas"
                   >
                     <Globe size={16} className={active ? 'text-brand-600' : 'text-faint'} />
                     <span className={cx('flex-1 text-[13.5px]', active ? 'font-bold text-navy' : 'text-ink')}>
-                      {lang}
+                      {label}
                     </span>
                     {active && <Check size={17} className="text-brand-600" />}
                   </button>
@@ -254,7 +276,9 @@ export function Language() {
             })}
           </ul>
         </Card>
-        <p className="px-1 text-[11px] text-faint">Only English copy is bundled in this prototype.</p>
+        <p className="px-1 text-[11px] text-faint">
+          Interface copy is bundled in Sinhala and English. Untranslated screens fall back to English.
+        </p>
       </div>
     </div>
   )

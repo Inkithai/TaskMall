@@ -5,6 +5,7 @@ import { OrderStatusBadge, SimulatedTag } from '../ui/Badge'
 import { Button, Card, cx } from '../ui/primitives'
 import { ProductThumb } from '../product/ProductThumb'
 import { PACKAGE_STATUS_META } from '../../data/packages'
+import { useLang } from '../../lib/i18n'
 import { countdown, lkr, pct, timeOfDay } from '../../lib/format'
 import { demoNow } from '../../lib/clock'
 
@@ -17,6 +18,7 @@ export function OrderCard({
   product?: Product
   onComplete?: (orderNumber: string) => void
 }) {
+  const { t } = useLang()
   const pkgMeta = PACKAGE_STATUS_META[order.pkg.status]
   const expiringSoon =
     order.status === 'pending' && new Date(order.expiresAt).getTime() - demoNow().getTime() < 3 * 3_600_000
@@ -26,7 +28,7 @@ export function OrderCard({
       {/* Header strip */}
       <div className="flex items-start justify-between gap-3 border-b border-hairline px-4 py-3">
         <div className="min-w-0">
-          <p className="text-[10.5px] font-medium text-muted">Order number:</p>
+          <p className="text-[10.5px] font-medium text-muted">{t('order.number')}</p>
           <p className="truncate text-[13px] font-bold tnum text-navy">{order.orderNumber}</p>
         </div>
         <OrderStatusBadge status={order.status} className="mt-1 shrink-0" />
@@ -55,19 +57,19 @@ export function OrderCard({
         {/* Financials */}
         <div className="mt-3 rounded-xl bg-canvas p-3">
           <div className="flex items-baseline justify-between">
-            <span className="text-[11.5px] font-medium text-muted">Order amount</span>
+            <span className="text-[11.5px] font-medium text-muted">{t('order.amount')}</span>
             <span className="flex items-center gap-1.5">
               <SimulatedTag compact />
               <span className="text-[16px] font-extrabold tnum text-amount">{lkr(order.amount)}</span>
             </span>
           </div>
           <div className="mt-2 flex items-baseline justify-between">
-            <span className="text-[11.5px] font-medium text-muted">Income ratio</span>
+            <span className="text-[11.5px] font-medium text-muted">{t('order.incomeRatio')}</span>
             <span className="text-[12.5px] font-bold tnum text-navy">{pct(order.rewardRate)}</span>
           </div>
           <div className="mt-1.5 flex items-baseline justify-between">
             <span className="text-[11.5px] font-medium text-muted">
-              {order.status === 'completed' ? 'Simulated reward' : 'Expected reward'}
+              {order.status === 'completed' ? t('order.simulatedReward') : t('order.expectedReward')}
             </span>
             <span className="text-[14px] font-extrabold tnum text-reward">{lkr(order.reward)}</span>
           </div>
@@ -98,8 +100,12 @@ export function OrderCard({
 
         {/* Meta */}
         <div className="mt-3 flex items-center justify-between gap-2 text-[11px] text-muted">
-          <span className="tnum">Order time: {timeOfDay(order.orderTime)}</span>
-          <span className="tnum">Effective time: {order.effectiveHours} hours</span>
+          <span className="tnum">
+            {t('order.orderTime')} {timeOfDay(order.orderTime)}
+          </span>
+          <span className="tnum">
+            {t('order.effectiveTime')} {order.effectiveHours} {t('common.hours')}
+          </span>
         </div>
 
         {order.status === 'pending' && (
@@ -110,7 +116,7 @@ export function OrderCard({
             )}
           >
             <Clock size={12} />
-            {expiringSoon ? 'Expiring soon · ' : 'Time remaining · '}
+            {expiringSoon ? t('order.expiringSoon') : t('order.timeRemaining')}{' '}
             <span className="tnum">{countdown(order.expiresAt, demoNow())}</span>
           </div>
         )}
@@ -121,11 +127,11 @@ export function OrderCard({
             to={`/orders/${order.orderNumber}`}
             className="flex h-10 items-center justify-center rounded-xl bg-brand-50 text-[13px] font-bold text-brand-700 transition-colors hover:bg-brand-100"
           >
-            Order Details
+            {t('order.details')}
           </Link>
           {order.status === 'pending' && onComplete && (
             <Button size="md" onClick={() => onComplete(order.orderNumber)} className="!h-10">
-              Complete Task
+              {t('order.complete')}
             </Button>
           )}
         </div>

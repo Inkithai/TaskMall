@@ -49,6 +49,13 @@ export default function About() {
             interface patterns these platforms use — including the ones that are commonly abused.
           </p>
           <p className="mt-2 text-[12.5px] leading-relaxed text-muted">
+            The layout deliberately mirrors a real Sri Lankan task platform studied in{' '}
+            <strong>docs/task-scam-red-flags.md</strong>: phone-number login with a +94 country code, a Sinhala-first
+            interface, the Home / Rent / Team / Revenue / My tab bar, a promo carousel and a scrolling withdrawal
+            ticker. The <em>look</em> is reproduced so it can be recognised; the cash-flow inversion that defines the
+            fraud is not — no deposit unlocks anything here.
+          </p>
+          <p className="mt-2 text-[12.5px] leading-relaxed text-muted">
             All data is generated locally and stored in your browser. Nothing is transmitted anywhere.
           </p>
         </Card>

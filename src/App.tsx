@@ -11,9 +11,9 @@ import ForgotPassword from './screens/auth/ForgotPassword'
 
 /* User app */
 import Home from './screens/user/Home'
-import Orders from './screens/user/Orders'
+import Revenue from './screens/user/Revenue'
 import OrderDetails from './screens/user/OrderDetails'
-import ProductList from './screens/user/ProductList'
+import Rent from './screens/user/Rent'
 import ProductDetails from './screens/user/ProductDetails'
 import ProductPackageInfo from './screens/user/ProductPackageInfo'
 import Packages from './screens/user/Packages'
@@ -103,10 +103,14 @@ export default function App() {
       >
         <Route path="/home" element={<Home />} />
 
-        <Route path="/orders" element={<Orders />} />
+        {/* Tab structure mirrors the reference platform: Home / Rent / Team /
+            Revenue / My. Legacy list routes redirect to their new tabs. */}
+        <Route path="/orders" element={<Navigate to="/revenue" replace />} />
+        <Route path="/revenue" element={<Revenue />} />
         <Route path="/orders/:orderNumber" element={<OrderDetails />} />
 
-        <Route path="/products" element={<ProductList />} />
+        <Route path="/products" element={<Navigate to="/rent" replace />} />
+        <Route path="/rent" element={<Rent />} />
         <Route path="/products/:productId" element={<ProductDetails />} />
         <Route path="/products/:productId/package" element={<ProductPackageInfo />} />
 
